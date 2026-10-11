@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вече — анонимный сбор решений от сотрудников</title>
+<style>
+  :root { --bg:#f6f7fb; --card:#fff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --acc:#1d4ed8; --acc2:#0f766e; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.5 -apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:#0b1b3f; color:#fff; padding:12px 22px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; }
+  .brand { display:flex; gap:12px; align-items:center; } .logo { width:38px; height:38px; border-radius:10px; background:#f59e0b; color:#0b1b3f; display:grid; place-items:center; font-weight:800; font-size:20px; }
+  .brand h1 { margin:0; font-size:19px; } .brand div div { color:#c7d2fe; font-size:13px; }
+  .controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  header select, header button { background:#16295a; color:#fff; border:1px solid #2a3f7a; border-radius:8px; padding:7px 11px; font:inherit; cursor:pointer; }
+  header .primary { background:#f59e0b; color:#0b1b3f; border-color:#f59e0b; font-weight:600; }
+  #who { font-size:13px; color:#c7d2fe; }
+  nav { display:flex; gap:4px; padding:0 22px; background:#fff; border-bottom:1px solid var(--line); overflow-x:auto; }
+  .tab { border:0; background:none; padding:12px 14px; cursor:pointer; color:var(--muted); border-bottom:3px solid transparent; font:inherit; white-space:nowrap; }
+  .tab.active { color:var(--ink); border-bottom-color:var(--acc); font-weight:600; }
+  main { max-width:900px; margin:0 auto; padding:18px 22px 40px; }
+  h2 { font-size:21px; margin:6px 0 12px; } h3 { font-size:16px; margin:0 0 8px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:12px; }
+  .task { cursor:pointer; transition:.15s; } .task:hover { border-color:var(--acc); box-shadow:0 2px 10px rgba(29,78,216,.08); }
+  .row-between { display:flex; justify-content:space-between; gap:10px; align-items:center; }
+  .phase { font-size:12px; padding:2px 9px; border-radius:99px; font-weight:600; }
+  .ph-ideas { background:#dbeafe; color:#1e40af; } .ph-voting { background:#fef3c7; color:#92400e; } .ph-done { background:#dcfce7; color:#166534; }
+  .muted { color:var(--muted); } .small { font-size:12.5px; }
+  .stepper { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:6px; } .stp { padding:5px 10px; border-radius:8px; background:#f3f4f6; color:var(--muted); font-size:13px; }
+  .stp.cur { background:var(--acc); color:#fff; } .stp.past { background:#e0e7ff; color:#3730a3; } .arr { color:#9ca3af; }
+  .leader { background:#fffbeb; border-color:#fde68a; } .btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  button { font:inherit; cursor:pointer; } button.primary { background:var(--acc); color:#fff; border:0; border-radius:8px; padding:8px 14px; }
+  button.ghost { background:#fff; border:1px solid var(--line); border-radius:8px; padding:6px 12px; } button.sm { padding:3px 8px; font-size:12.5px; } button.on { background:#111827; color:#fff; }
+  textarea, input { width:100%; font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:8px; margin:6px 0 10px; }
+  input.sm { width:110px; } label { display:block; font-size:13px; color:var(--muted); } .row { display:flex; gap:12px; flex-wrap:wrap; } .row label { flex:1; }
+  .sol p { margin:6px 0 10px; } .sol.voted { border-color:var(--acc); background:#f5f8ff; } .votes { font-weight:700; color:var(--acc); }
+  .status { font-size:13.5px; padding:6px 10px; border-radius:8px; background:#f3f4f6; margin-bottom:8px; } .st-done { background:#dcfce7; } .st-accepted { background:#e0f2fe; } .st-in_work { background:#fef9c3; } .st-rejected { background:#fee2e2; }
+  .decide { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; } .decide input { margin:4px 0 0; }
+  .simbox { background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; padding:8px 12px; margin-bottom:10px; font-size:13.5px; } .simbox ul { margin:4px 0 0; padding-left:18px; }
+  .info2 { background:#eff6ff; border-color:#bfdbfe; } .hint { background:#eff6ff; border-color:#bfdbfe; padding:10px 14px; } .intro { background:#fff7ed; border-color:#fed7aa; }
+  .grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; } .kpi { font-size:30px; font-weight:750; } .kpi small { font-size:14px; color:var(--muted); font-weight:500; }
+  .bar { display:grid; grid-template-columns:1fr 160px; gap:12px; align-items:center; padding:6px 0; border-bottom:1px solid var(--line); }
+  .bt { position:relative; background:#f3f4f6; height:20px; border-radius:6px; } .bt div { background:var(--acc); height:100%; border-radius:6px; } .bt span { position:absolute; right:6px; top:0; font-size:12.5px; font-weight:700; }
+  .step { display:flex; gap:14px; } .sn { flex:0 0 34px; height:34px; border-radius:50%; background:var(--acc); color:#fff; display:grid; place-items:center; font-weight:700; }
+  table { width:100%; border-collapse:collapse; } th, td { padding:7px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; } th { font-size:12.5px; color:var(--muted); }
+  #toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:#111827; color:#fff; padding:10px 16px; border-radius:10px; opacity:0; transition:.3s; pointer-events:none; } #toast.show { opacity:1; }
+  .anonbox { background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; padding:8px 12px; margin-bottom:10px; font-size:13.5px; }
+  .chip { display:inline-block; background:#fff; border:1px solid #a7f3d0; border-radius:99px; padding:0 8px; margin:2px 2px 0 0; font-size:12px; }
+  .preview { background:#fff; border-radius:6px; padding:6px 10px; margin:4px 0 6px; } .chk { display:flex; gap:6px; align-items:center; color:var(--ink); } .chk input { width:auto; margin:0; }
+  .agenda { background:#fffbeb; border-color:#fde68a; } .agenda ol { margin:6px 0 0; padding-left:20px; } .agenda li { margin:4px 0; }
+  @media print { header, nav, footer, .leader, .stepper, #back, .sol, .grid3, .bar { display:none !important; } }
+  .howto li { margin:6px 0; }
+  footer { max-width:900px; margin:0 auto; padding:0 22px 30px; color:var(--muted); font-size:12.5px; }
+  @media (max-width:640px){ .bar{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">В</div><div><h1>Вече</h1><div>анонимный сбор решений от сотрудников</div></div></div>
+  <div class="controls">
+    <span id="who"></span>
+    <select id="roleSel" title="Демо: переключить роль"><option value="employee">Сотрудник</option><option value="leader">Руководитель</option></select>
+    <button id="switchBtn" title="Демо: посмотреть глазами другого сотрудника">👤 Другой сотрудник</button>
+    <button id="newBtn" class="primary">+ Новая задача</button>
+    <button id="resetBtn" title="Вернуть демо-данные">↺</button>
+  </div>
+</header>
+<nav>
+  <button class="tab active" data-view="tasks">Задачи</button>
+  <button class="tab" data-view="guide">Как пользоваться</button>
+  <button class="tab" data-view="stats">Аналитика</button>
+</nav>
+<main id="view"></main>
+<footer>Вече · MVP команды «Высокая ставка», Академия Финтеха 2026, трек «Эффективность 360». Демо-версия: данные хранятся только в вашем браузере.</footer>
+<div id="toast"></div>
+<script>
+/* Вече — ядро: тексты, похожесть, кластеры, голосование (без DOM) */
+(function (root) {
+  'use strict';
+  const STOP = new Set(('и в во не что он на я с со как а то все она так его но да ты к у же вы за бы по только ее мне было вот от меня еще нет о из ему теперь когда даже ну вдруг ли если уже или ни быть был него до вас нибудь опять уж вам ведь там потом себя ничего ей может они тут где есть надо ней для мы тебя их чем была сам чтоб без будто чего раз тоже себе под будет ж тогда кто этот того потому этого какой совсем ним здесь этом один почти мой тем чтобы нее сейчас были куда зачем всех никогда можно при наконец два об другой хоть после над больше тот через эти нас про всего них какая много разве три эту моя впрочем хорошо свою этой перед иногда лучше чуть том нельзя такой им более всегда конечно всю между это нужно чтобы сделать делать также очень просто каждый каждого которые который которая которое время часть ещё').split(' '));
+
+  function stem(w) {
+    // грубый стемминг: срезаем частые окончания, оставляем основу до 6 букв
+    w = w.replace(/(ами|ями|ого|его|ому|ему|ыми|ими|ах|ях|ов|ев|ей|ой|ий|ый|ая|яя|ое|ее|ую|юю|ам|ям|ом|ем|ет|ут|ют|ит|ат|ят|ать|ять|ить|еть|ться|тся|ешь|ишь|ы|и|а|я|о|е|у|ю|ь)$/, '');
+    return w.slice(0, 6);
+  }
+  function tokens(text) {
+    return (text.toLowerCase().replace(/ё/g, 'е').match(/[a-zа-я0-9]+/g) || [])
+      .filter(w => w.length > 2 && !STOP.has(w)).map(stem).filter(w => w.length > 2);
+  }
+  function feats(text) {
+    const raw = (text.toLowerCase().replace(/ё/g, 'е').match(/[a-zа-я0-9]+/g) || []).filter(w => w.length > 2 && !STOP.has(w));
+    const out = [];
+    raw.forEach(w => { const st = stem(w); if (st.length > 2) out.push(st); if (w.length >= 5) for (let i = 0; i + 4 <= w.length; i++) out.push('#' + w.slice(i, i + 4)); });
+    return out;
+  }
+  function vectors(texts) {
+    const docs = texts.map(feats);
+    const df = {};
+    docs.forEach(d => new Set(d).forEach(t => df[t] = (df[t] || 0) + 1));
+    const N = docs.length;
+    return docs.map(d => {
+      const tf = {}; d.forEach(t => tf[t] = (tf[t] || 0) + 1);
+      const v = {}; let norm = 0;
+      Object.keys(tf).forEach(t => { const x = (1 + Math.log(tf[t])) * Math.log(1 + N / df[t]); v[t] = x; norm += x * x; });
+      norm = Math.sqrt(norm) || 1; Object.keys(v).forEach(t => v[t] /= norm);
+      return v;
+    });
+  }
+  function cosine(a, b) { let s = 0; for (const t in a) if (b[t]) s += a[t] * b[t]; return s; }
+
+  // похожие решения для нового текста
+  function findSimilar(text, solutions, thr) {
+    thr = thr === undefined ? 0.22 : thr;
+    if (!solutions.length || tokens(text).length < 2) return [];
+    const vs = vectors(solutions.map(s => s.text).concat([text]));
+    const q = vs[vs.length - 1];
+    return solutions.map((s, i) => ({ s, sim: cosine(q, vs[i]) })).filter(x => x.sim >= thr).sort((a, b) => b.sim - a.sim);
+  }
+
+  // группировка похожих решений (single-link по порогу)
+  function clusters(solutions, thr) {
+    thr = thr === undefined ? 0.22 : thr;
+    const n = solutions.length; if (!n) return [];
+    const vs = vectors(solutions.map(s => s.text));
+    const parent = solutions.map((_, i) => i);
+    const find = i => parent[i] === i ? i : (parent[i] = find(parent[i]));
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) if (cosine(vs[i], vs[j]) >= thr) parent[find(i)] = find(j);
+    const groups = {};
+    solutions.forEach((s, i) => { const r = find(i); (groups[r] = groups[r] || []).push(i); });
+    return Object.values(groups).map(idx => {
+      const agg = {}; idx.forEach(i => { for (const t in vs[i]) agg[t] = (agg[t] || 0) + vs[i][t]; });
+      const top = Object.entries(agg).sort((a, b) => b[1] - a[1]).slice(0, 3).map(x => x[0]);
+      const items = idx.map(i => solutions[i]);
+      return { items, terms: top, votes: items.reduce((s, x) => s + x.votes.length, 0) };
+    }).sort((a, b) => b.votes - a.votes || b.items.length - a.items.length);
+  }
+
+  // анонимное имя: номер по порядку появления автора в задаче (не связывается между задачами)
+  function anonName(task, authorId) {
+    const order = [];
+    task.solutions.forEach(s => { if (!order.includes(s.author)) order.push(s.author); });
+    (task.comments || []).forEach(c => { if (!order.includes(c.author)) order.push(c.author); });
+    const k = order.indexOf(authorId);
+    return 'Участник №' + (k < 0 ? order.length + 1 : k + 1);
+  }
+
+  // детерминированное перемешивание для каждого пользователя (без эффекта порядка)
+  function shuffleFor(arr, seed) {
+    let h = 2166136261; for (const c of seed) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0; const j = h % (i + 1); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+
+  function stats(task) {
+    const authors = new Set(task.solutions.map(s => s.author));
+    const voters = new Set(task.solutions.flatMap(s => s.votes));
+    const totalVotes = task.solutions.reduce((s, x) => s + x.votes.length, 0);
+    return {
+      solutions: task.solutions.length, authors: authors.size, voters: voters.size, totalVotes,
+      partAuthors: task.invited ? authors.size / task.invited : 0,
+      partVoters: task.invited ? voters.size / task.invited : 0,
+      decided: task.solutions.filter(s => s.status).length,
+      accepted: task.solutions.filter(s => s.status === 'accepted' || s.status === 'done').length,
+    };
+  }
+
+  function ranking(task) {
+    return task.solutions.slice().sort((a, b) => b.votes.length - a.votes.length || a.created - b.created);
+  }
+
+
+  // ---------- стилистическое обезличивание ----------
+  // Убирает из текста детали, по которым автора можно узнать: должность, стаж, смену,
+  // имена коллег, «я-высказывания», личные приметы стиля (!!!, ))), эмодзи, КАПС).
+  const ROLES = 'старш(?:ий|ая|его|ей)\\s+\\S+|главн(?:ый|ая)\\s+\\S+|кассир\\S*|операционист\\S*|оператор\\S*|методист\\S*|администратор\\S*|менеджер\\S*|специалист\\S*|консультант\\S*|бариста|стажер\\S*|стажёр\\S*|новичок|наставник\\S*|руководител\\S*|начальник\\S*|заместител\\S*|замдекан\\S*|секретар\\S*|бухгалтер\\S*|лаборант\\S*|преподавател\\S*|доцент\\S*';
+  // \b в JS не понимает кириллицу — заменяем на юникодную границу слова
+  const WB = String.raw`(?:(?<=[\p{L}\d])(?![\p{L}\d])|(?<![\p{L}\d])(?=[\p{L}\d]))`;
+  const UB = (src, flags) => new RegExp(src.split(String.raw`\b`).join(WB), flags);
+  const RULES = [
+    { re: UB(String.raw`\b(?:я|мы)\s+(?:работаю|работаем|тружусь|служу)\s+[^.,;!?]*?(?:\d+|пять|шесть|семь|восемь|десять|два|три|четыре)\s*(?:лет|года|год|месяц\S*)`, 'giu'), to: '', why: 'стаж' },
+    { re: UB(String.raw`\b(?:уже\s+)?(?:\d+|два|три|четыре|пять|шесть|семь|восемь|девять|десять)\s*(?:лет|года|год)\s+(?:работаю|в\s+банке|в\s+компании|на\s+кафедре|в\s+отделе|в\s+офисе)`, 'giu'), to: '', why: 'стаж' },
+    { re: UB(String.raw`\b(?:я\s+)?работаю\s+(?:` + ROLES + String.raw`)(?:\s+(?:в|на)\s+\S+(?:\s*(?:№|N)\s*\d+)?)?`, 'giu'), to: '', why: 'должность' },
+    { re: UB(String.raw`\b(?:я\s+)?(?:как\s+|—\s*)?(?:` + ROLES + String.raw`)(?:\s+(?:вечерн|утренн|ночн|дневн|перв|втор|треть)\S*\s+смен\S*)?`, 'giu'), to: '', why: 'должность' },
+    { re: UB(String.raw`\b(?:в|на)\s+(?:нашей|моей|своей)?\s*(?:утренн\S+|вечерн\S+|ночн\S+|перв\S+|втор\S+|треть\S+)\s+смен\S*`, 'giu'), to: 'в одной из смен', why: 'смена' },
+    { re: UB(String.raw`\b(?:утренн|вечерн|ночн|дневн|перв|втор|треть)\S*\s+смен\S*`, 'giu'), to: 'одной из смен', why: 'смена' },
+    { re: UB(String.raw`\bсмен\S*\s+[«"]?[А-ЯA-Z0-9][»"]?(?=[\s,.;!?]|$)`, 'gu'), to: 'одна из смен', why: 'смена' },
+    { re: UB(String.raw`\b(?:в|на)\s+(?:окне|кассе|кабинете|аудитории|столе)\s*(?:№|N|номер)?\s*\d+`, 'giu'), to: '', why: 'рабочее место' },
+    { re: UB(String.raw`\b(?:у|в)\s+(?:меня|нас)\s+в\s+(?:отделе|группе|команде|кабинете|смене)\b`, 'giu'), to: 'в подразделении', why: 'отдел' },
+    { re: UB(String.raw`\b(?:Иван|Мари[яи]|Анн[аы]|Ольг[аи]|Елен[аы]|Наталь[яи]|Татьян[аы]|Сергей|Серге[яю]|Алексе[йяю]|Андре[йяю]|Дмитри[йяю]|Михаил\S*|Светлан[аы]|Ирин[аы]|Юли[яи]|Екатерин[аы]|Никола[йяю]|Владимир\S*|Павел|Паш[аеи]|Саш[аеи]|Маш[аеи]|Лен[аеы]|Тан[яеи])(?:\s+[А-ЯЁ][а-яё]+(?:вич|вна|вны|вича)\b)?`, 'gu'), to: 'коллега', why: 'имя' },
+    { re: UB(String.raw`\b[А-ЯЁ][а-яё]+\s+[А-ЯЁ][а-яё]+(?:вич|вна|ична|вны|вича|вне)\b`, 'gu'), to: 'коллега', why: 'имя и отчество' },
+    { re: UB(String.raw`\b(?:мне\s+)?(?:лично\s+)?(?:кажется|думаю|считаю|по-моему|по моему мнению|я\s+думаю|я\s+считаю|я\s+предлагаю|предлагаю)\b\s*,?\s*(?:что\s+)?`, 'giu'), to: '. ', why: 'я-высказывание' },
+    { re: UB(String.raw`\bя\s+(?:заметил|заметила|вижу|видела|видел)\s*,?\s*(?:что\s+)?`, 'giu'), to: 'замечено: ', why: 'я-высказывание' },
+    { re: UB(String.raw`!{2,}`, 'gu'), to: '!', why: 'стиль: !!!' },
+    { re: UB(String.raw`\?{2,}`, 'gu'), to: '?', why: 'стиль: ???' },
+    { re: UB(String.raw`\s*[)(]{2,}`, 'gu'), to: '', why: 'стиль: )))' },
+    { re: UB(String.raw`\.{4,}`, 'gu'), to: '…', why: 'стиль: ....' },
+    { re: UB(String.raw`[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]`, 'gu'), to: '', why: 'эмодзи' },
+    { re: UB(String.raw`\b(?:блин|капец|короче|типа|ваще|вообще-то|ну)\b,?\s*`, 'giu'), to: '', why: 'разговорные слова' },
+  ];
+  function anonymize(text) {
+    let t = text; const found = [];
+    RULES.forEach(r => { t = t.replace(r.re, (m) => { if (m.trim()) found.push({ from: m.trim(), why: r.why }); return r.to; }); });
+    // КАПС-слова (4+ букв) → обычный регистр
+    t = t.replace(UB(String.raw`\b[А-ЯЁA-Z]{3,}\b`, 'gu'), (m) => { if (/^(?:ВТБ|СБП|МФЦ|НДФЛ|ЕГРЮЛ|CRM|ИТ|ИИ|HR)$/.test(m)) return m; found.push({ from: m, why: 'стиль: КАПС' }); return m.toLowerCase(); });
+    t = t.replace(/\s{2,}/g, ' ').replace(/\s+([,.;!?])/g, '$1').replace(/([,.;!?])(?:\s*[,.;])+/g, '$1').replace(/^[\s,.;:—-]+/, '').replace(/^(?:и|а|но)\s+/i, '').trim();
+    t = t.replace(/(^|[.!?]\s+)(\p{Ll})/gu, (m, a, b) => a + b.toUpperCase());
+    return { text: t, found };
+  }
+
+  root.VC = { anonymize, tokens, vectors, cosine, findSimilar, clusters, anonName, shuffleFor, stats, ranking };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Вече — интерфейс */
+(function () {
+  'use strict';
+  const V = window.VC;
+  const $ = (s, el) => (el || document).querySelector(s);
+  const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const pl = (n, a, b, c) => { const m = n % 10, h = n % 100; return n + ' ' + (m === 1 && h !== 11 ? a : m >= 2 && m <= 4 && (h < 12 || h > 14) ? b : c); };
+  const pct = (x) => Math.round(x * 100) + '%';
+  const KEY = 'veche_state_v1';
+  const VOTES_PER_USER = 3;
+  const PHASE = { ideas: 'Сбор решений', voting: 'Голосование', done: 'Обсуждение и решения' };
+  const STATUS = { accepted: '✅ Принято', in_work: '🛠 В работе', done: '🏁 Внедрено', rejected: '✖ Не берём' };
+
+  const uid = () => Math.random().toString(36).slice(2, 10);
+  const now = () => Date.now();
+  const day = 864e5;
+
+  // ---------- демо-данные ----------
+  function demo() {
+    const t0 = now();
+    const fake = (n) => Array.from({ length: n }, () => 'u' + uid());
+    const pool = fake(40);
+    const pick = (k, off) => pool.slice(off || 0, (off || 0) + k);
+    const S = (text, author, votes, extra) => Object.assign({ id: uid(), text, author, created: t0 - Math.random() * 5 * day, votes, status: null, reply: '' }, extra || {});
+    return {
+      me: 'u' + uid(), role: 'employee', current: null,
+      tasks: [
+        {
+          id: uid(), dept: 'Отделение банка, ул. Мира 12', title: 'Как сократить очереди в отделении в часы пик (12–14 и 17–19)?',
+          context: 'В обед и вечером клиенты ждут по 25–40 минут, растёт число жалоб. Бюджет на новых сотрудников не выделен. Нужны решения, которые можно внедрить за месяц.',
+          criteria: 'Эффект для клиента, стоимость, скорость внедрения', invited: 38, phase: 'voting', created: t0 - 6 * day, owner: 'leader',
+          solutions: [
+            S('Ввести предварительную запись на визит через мобильное приложение и сайт — по записи обслуживать в отдельном окне', pool[0], pick(14, 1)),
+            S('Сделать запись в отделение заранее через приложение, чтобы клиенты приходили к своему времени', pool[1], pick(6, 15)),
+            S('Сдвинуть обеды сотрудников с 12–14 на 11–12 и 14–15, чтобы в пик работали все окна', pool[2], pick(11, 3)),
+            S('Поставить консультанта в зал: он помогает сделать простые операции в банкомате и приложении без очереди к окну', pool[3], pick(9, 8)),
+            S('Выдавать дебетовые карты курьером, а не в отделении — это треть всех визитов', pool[4], pick(7, 20)),
+            S('Повесить табло с реальным временем ожидания и присылать СМС, когда подходит очередь, чтобы люди не стояли в зале', pool[5], pick(4, 25)),
+            S('Сделать отдельное окно «быстрых операций» до 5 минут: справки, смена ПИН, активация карты', pool[6], pick(8, 12)),
+            S('Обучить операционистов отвечать на типовые вопросы по чек-листу, чтобы не звать старшего', pool[7], pick(3, 30)),
+          ],
+          comments: [],
+        },
+        {
+          id: uid(), dept: 'Учебный офис факультета', title: 'Как ускорить согласование служебных записок (сейчас в среднем 9 дней)?',
+          context: 'Служебная записка проходит 4–6 подписей. Часто теряется между кабинетами или ждёт, пока подписант вернётся из командировки.',
+          criteria: 'Скорость, прозрачность, не нарушает регламент', invited: 24, phase: 'ideas', created: t0 - 2 * day, owner: 'leader',
+          solutions: [
+            S('Перевести записки в электронный вид с отметкой статуса: видно, у кого записка сейчас и сколько дней она там лежит', pool[10], []),
+            S('Разрешить заместителю подписывать, если руководитель в командировке больше 2 дней', pool[11], []),
+            S('Еженедельная «планёрка подписей»: все подписанты собираются на 20 минут по вторникам', pool[12], []),
+            S('Шаблоны записок для типовых случаев, чтобы их не возвращали на доработку из-за оформления', pool[13], []),
+          ],
+          comments: [],
+        },
+        {
+          id: uid(), dept: 'Контакт-центр', title: 'Что больше всего мешает новичку в первые две недели?',
+          context: 'За первые 3 месяца увольняется каждый четвёртый новый оператор. Хотим понять, что улучшить в адаптации.',
+          criteria: 'Влияние на удержание, простота', invited: 52, phase: 'done', created: t0 - 30 * day, owner: 'leader',
+          solutions: [
+            S('Назначать наставника из опытных операторов на первые 2 недели, с доплатой за наставничество', pool[20], pick(23, 0), { status: 'done', reply: 'Внедрено с 1 сентября: 6 наставников, доплата 5 000 ₽ за новичка. Увольнения новичков снизились с 26% до 17%.' }),
+            S('Единый чек-лист первых дней: какие системы, к кому идти, какие курсы пройти', pool[21], pick(18, 10), { status: 'in_work', reply: 'Готовим вместе с HR, запуск в ноябре.' }),
+            S('Не ставить новичков на сложные линии (претензии, взыскание) первые 3 недели', pool[22], pick(15, 20), { status: 'accepted', reply: 'Принято, правило добавлено в график.' }),
+            S('Больше перерывов: сейчас 10 минут на 4 часа, этого мало', pool[23], pick(9, 30), { status: 'rejected', reply: 'Пока не можем из-за норматива по нагрузке. Вернёмся к вопросу после найма 5 операторов.' }),
+          ],
+          comments: [],
+        },
+      ],
+    };
+  }
+
+  let ST = load();
+  function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.tasks) return s; } catch (e) { } return demo(); }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) { } }
+  const task = () => ST.tasks.find(t => t.id === ST.current);
+  const isLeader = () => ST.role === 'leader';
+  const myVotes = (t) => t.solutions.filter(s => s.votes.includes(ST.me)).length;
+  function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+
+  // ---------- шапка ----------
+  function renderHeader() {
+    $('#roleSel').value = ST.role;
+    $('#who').textContent = isLeader() ? 'Вы — руководитель' : 'Вы — сотрудник (анонимно)';
+    $('#newBtn').style.display = isLeader() ? '' : 'none';
+    $('#switchBtn').style.display = isLeader() ? 'none' : '';
+    const st = $('.tab[data-view="stats"]'); if (st && st.style) st.style.display = isLeader() ? '' : 'none';
+    if (!isLeader() && ST.view === 'stats') ST.view = 'tasks';
+  }
+
+  // ---------- список задач ----------
+  function renderList() {
+    $('#view').innerHTML = `
+      <h2>Задачи для команды</h2>
+      ${ST.tasks.map(t => {
+      const st = V.stats(t);
+      return `<div class="card task" data-open="${t.id}">
+          <div class="row-between"><span class="phase ph-${t.phase}">${PHASE[t.phase]}</span><span class="muted small">${esc(t.dept)}</span></div>
+          <h3>${esc(t.title)}</h3>
+          <div class="muted small">${pl(st.solutions, 'решение', 'решения', 'решений')} · проголосовали ${st.voters} из ${t.invited} · участие ${pct(Math.max(st.partAuthors, st.partVoters))}${t.phase === 'done' ? ` · решений руководителя: ${st.decided}` : ''}</div>
+        </div>`;
+    }).join('')}`;
+    $$('[data-open]').forEach(el => el.addEventListener('click', () => { ST.current = el.dataset.open; save(); render(); }));
+    bindGo();
+  }
+
+  // ---------- страница задачи ----------
+  function renderTask() {
+    const t = task(); if (!t) { ST.current = null; return renderList(); }
+    const st = V.stats(t);
+    const steps = ['ideas', 'voting', 'done'];
+    const stepper = `<div class="stepper">${steps.map((p, i) => `<div class="stp ${p === t.phase ? 'cur' : steps.indexOf(t.phase) > i ? 'past' : ''}"><b>${i + 1}</b> ${PHASE[p]}</div>`).join('<span class="arr">→</span>')}</div>`;
+    let body = '';
+    if (t.phase === 'ideas') body = ideasPhase(t);
+    if (t.phase === 'voting') body = votingPhase(t);
+    if (t.phase === 'done') body = resultsPhase(t);
+
+    const leaderBar = isLeader() ? `<div class="card leader">
+        <b>Панель руководителя.</b> Приглашено ${t.invited} чел. · прислали решения ${st.authors} (${pct(st.partAuthors)}) · проголосовали ${st.voters} (${pct(st.partVoters)})
+        <div class="btns">
+          ${t.phase === 'ideas' ? '<button class="primary" data-phase="voting">Закрыть сбор → открыть голосование</button>' : ''}
+          ${t.phase === 'voting' ? '<button class="primary" data-phase="done">Закрыть голосование → итоги</button>' : ''}
+          ${t.phase !== 'ideas' ? '<button class="ghost" data-phase="ideas">Вернуть на сбор решений</button>' : ''}
+          <button class="ghost" id="delTask">Удалить задачу</button>
+        </div></div>` : '';
+
+    $('#view').innerHTML = `
+      <a href="#" id="back">← Все задачи</a>
+      <div class="card"><div class="muted small">${esc(t.dept)}</div><h2>${esc(t.title)}</h2>
+        <p>${esc(t.context)}</p>${t.criteria ? `<p class="muted small"><b>Как будем выбирать:</b> ${esc(t.criteria)}</p>` : ''}${stepper}</div>
+      ${leaderBar}
+      ${body}`;
+    $('#back').addEventListener('click', e => { e.preventDefault(); ST.current = null; save(); render(); });
+    $$('[data-phase]').forEach(b => b.addEventListener('click', () => { t.phase = b.dataset.phase; save(); render(); toast('Этап: ' + PHASE[t.phase]); }));
+    const del = $('#delTask'); if (del) del.addEventListener('click', () => { if (confirm('Удалить задачу?')) { ST.tasks = ST.tasks.filter(x => x.id !== t.id); ST.current = null; save(); render(); } });
+    bindPhase(t);
+  }
+
+  function solCard(t, s, opts) {
+    const o = opts || {};
+    const mine = s.author === ST.me;
+    const voted = s.votes.includes(ST.me);
+    return `<div class="card sol ${voted ? 'voted' : ''}">
+      <div class="row-between"><span class="muted small">${esc(V.anonName(t, s.author))}${mine ? ' · <b>ваше</b>' : ''}</span>
+        ${o.showVotes ? `<span class="votes">${pl(s.votes.length, 'голос', 'голоса', 'голосов')}</span>` : ''}</div>
+      <p>${esc(s.text)}</p>
+      ${s.status ? `<div class="status st-${s.status}">${STATUS[s.status]}${s.reply ? ` — ${esc(s.reply)}` : ''}</div>` : ''}
+      ${o.vote ? `<button class="${voted ? 'ghost' : 'primary'}" data-vote="${s.id}">${voted ? 'Убрать голос' : 'Голосую за это'}</button>` : ''}
+      ${o.decide ? `<div class="decide">${Object.entries(STATUS).map(([k, v]) => `<button class="ghost sm ${s.status === k ? 'on' : ''}" data-dec="${s.id}" data-st="${k}">${v}</button>`).join('')}
+        <input placeholder="Решение собрания: кто, что и к какому сроку делает" data-reply="${s.id}" value="${esc(s.reply)}"></div>` : ''}
+    </div>`;
+  }
+
+  function ideasPhase(t) {
+    const mineN = t.solutions.filter(s => s.author === ST.me).length;
+    return `
+      <div class="card propose">
+        <h3>Ваше решение</h3>
+        <p class="muted small">🔒 Анонимно: все увидят только «Участник №N».</p>
+        <textarea id="solText" rows="3" placeholder="Опишите, что предлагаете сделать и почему это поможет"></textarea>
+        <div id="anonBox"></div>
+        <div id="similar"></div>
+        <button class="primary" id="sendSol">Отправить анонимно</button> ${mineN ? `<span class="muted small">Вы уже предложили: ${mineN}</span>` : ''}
+      </div>
+      <h3>Уже предложено: ${t.solutions.length}</h3>
+      <p class="muted small">Голосование откроется после закрытия сбора.</p>
+      ${V.shuffleFor(t.solutions, ST.me + t.id).map(s => solCard(t, s, {})).join('')}`;
+  }
+
+  function votingPhase(t) {
+    const left = VOTES_PER_USER - myVotes(t);
+    return `
+      <div class="card info2"><b>У вас ${left} из ${VOTES_PER_USER} голосов.</b> Голоса анонимны, счёт откроется после голосования.</div>
+      ${V.shuffleFor(t.solutions, ST.me + t.id).map(s => solCard(t, s, { vote: true, showVotes: isLeader() })).join('')}
+      ${isLeader() ? '<p class="muted small">Руководитель видит промежуточный счёт, сотрудники нет.</p>' : ''}`;
+  }
+
+  function resultsPhase(t) {
+    const st = V.stats(t);
+    const rank = V.ranking(t);
+    const cl = V.clusters(t.solutions);
+    const max = Math.max(1, ...rank.map(s => s.votes.length));
+    return `
+      <div class="grid3">
+        <div class="card big"><div class="muted small">Решений</div><div class="kpi">${st.solutions}</div></div>
+        <div class="card big"><div class="muted small">Проголосовали</div><div class="kpi">${st.voters} <small>из ${t.invited}</small></div></div>
+        <div class="card big"><div class="muted small">Решений по итогам собрания</div><div class="kpi">${st.decided} <small>из ${st.solutions}</small></div></div>
+      </div>
+      <div class="card"><h3>Рейтинг решений</h3>
+        ${rank.map((s, i) => `<div class="bar"><div class="bl"><b>${i + 1}.</b> ${esc(s.text)}</div><div class="bt"><div style="width:${(s.votes.length / max * 100).toFixed(0)}%"></div><span>${s.votes.length}</span></div></div>`).join('')}
+      </div>
+      ${cl.some(c => c.items.length > 1) ? `<div class="card"><h3>Похожие решения объединены</h3>${cl.filter(c => c.items.length > 1).map(c => `<p>🔗 ${c.items.length} решения про одно и то же (${c.votes} голосов вместе): ${c.items.map(x => '«' + esc(x.text.slice(0, 70)) + '…»').join(', ')}</p>`).join('')}</div>` : ''}
+      ${agenda(t, rank, cl)}
+      <h3>Решения по итогам обсуждения</h3>
+      ${!isLeader() && !st.decided ? '<p class="muted">Решения появятся после собрания. Их увидят все участники.</p>' : ''}
+      ${rank.map(s => solCard(t, s, { showVotes: true, decide: isLeader() })).join('')}`;
+  }
+
+  // повестка открытого обсуждения: топ решений, авторы не раскрываются
+  function agenda(t, rank, cl) {
+    const top = rank.filter(s => s.votes.length > 0).slice(0, 5);
+    if (!top.length) return '';
+    const dupOf = (s) => { const c = cl.find(c => c.items.includes(s) && c.items.length > 1); return c ? c.items.length - 1 : 0; };
+    return `<div class="card agenda"><div class="row-between"><h3>📋 Повестка открытого обсуждения</h3><button class="ghost sm" onclick="window.print()">Распечатать</button></div>
+      <p class="muted small">Обсуждаем топ-${top.length} по голосам, по 10 минут на решение: суть → риски → кто делает → срок. Авторы не раскрываются: обсуждаем идеи, а не людей. Итог фиксируем ниже.</p>
+      <ol>${top.map(s => `<li><b>${esc(s.text)}</b> <span class="muted small">— ${pl(s.votes.length, 'голос', 'голоса', 'голосов')}${dupOf(s) ? `, + ${dupOf(s)} похож.` : ''}</span></li>`).join('')}</ol>
+      ${rank.length > top.length ? `<p class="muted small">Остальные решения (${rank.length - top.length}) не удаляются: они остаются в резерве ниже, их можно отметить или взять на следующее обсуждение.</p>` : ''}</div>`;
+  }
+
+  function bindPhase(t) {
+    const send = $('#sendSol');
+    if (send) {
+      const ta = $('#solText');
+      ta.addEventListener('input', () => {
+        const an = V.anonymize(ta.value);
+        $('#anonBox').innerHTML = an.found.length && ta.value.trim().length > 10 ? `<div class="anonbox">🛡 <b>Защита анонимности.</b> Нашли детали, по которым вас могут узнать: ${an.found.map(f => `<span class="chip" title="${esc(f.from)}">${esc(f.why)}</span>`).join(' ')}
+          <div class="muted small" style="margin-top:6px">Так текст увидят коллеги и руководитель:</div><div class="preview">${esc(an.text)}</div>
+          <label class="chk"><input type="checkbox" id="useAnon" checked> Отправить обезличенный вариант</label></div>` : '';
+        const sim = V.findSimilar(ta.value, t.solutions, 0.18).slice(0, 2);
+        $('#similar').innerHTML = sim.length ? `<div class="simbox">💡 Похожее уже предложено, можно дополнить своё или не дублировать:<ul>${sim.map(x => `<li>${esc(x.s.text)} <span class="muted small">(совпадение ${Math.round(x.sim * 100)}%)</span></li>`).join('')}</ul></div>` : '';
+      });
+      send.addEventListener('click', () => {
+        const ua = $('#useAnon');
+        const text = (ua && ua.checked ? V.anonymize(ta.value).text : ta.value).trim();
+        if (text.length < 15) { toast('Опишите решение подробнее (хотя бы одно предложение)'); return; }
+        t.solutions.push({ id: uid(), text, author: ST.me, created: now(), votes: [], status: null, reply: '' });
+        save(); render(); toast('Отправлено анонимно');
+      });
+    }
+    $$('[data-vote]').forEach(b => b.addEventListener('click', () => {
+      const s = t.solutions.find(x => x.id === b.dataset.vote);
+      const i = s.votes.indexOf(ST.me);
+      if (i >= 0) s.votes.splice(i, 1);
+      else { if (myVotes(t) >= VOTES_PER_USER) { toast('Все 3 голоса уже отданы — снимите один, чтобы переголосовать'); return; } s.votes.push(ST.me); }
+      save(); render();
+    }));
+    $$('[data-dec]').forEach(b => b.addEventListener('click', () => { const s = t.solutions.find(x => x.id === b.dataset.dec); s.status = s.status === b.dataset.st ? null : b.dataset.st; save(); render(); }));
+    $$('[data-reply]').forEach(inp => inp.addEventListener('change', () => { const s = t.solutions.find(x => x.id === inp.dataset.reply); s.reply = inp.value; save(); toast('Ответ сохранён — его увидят все участники'); }));
+  }
+
+  // ---------- новая задача ----------
+  function renderNew() {
+    $('#view').innerHTML = `
+      <a href="#" id="back">← Все задачи</a>
+      <div class="card"><h2>Новая задача для команды</h2>
+        <p class="muted small">Пример: «Как сократить очереди в обед без найма людей?»</p>
+        <label>Вопрос<input id="nTitle" placeholder="Как …?"></label>
+        <label>Контекст: что происходит, какие ограничения<textarea id="nCtx" rows="3"></textarea></label>
+        <label>Как будем выбирать (критерии)<input id="nCrit" placeholder="Эффект, стоимость, скорость внедрения"></label>
+        <div class="row"><label>Подразделение<input id="nDept" placeholder="Отдел / офис"></label><label>Сколько человек приглашаем<input id="nInv" type="number" value="20" class="sm"></label></div>
+        <button class="primary" id="create">Опубликовать и открыть сбор решений</button>
+      </div>`;
+    $('#back').addEventListener('click', e => { e.preventDefault(); ST.view = 'tasks'; save(); render(); });
+    $('#create').addEventListener('click', () => {
+      const title = $('#nTitle').value.trim(); if (title.length < 8) { toast('Сформулируйте вопрос'); return; }
+      const t = { id: uid(), title, context: $('#nCtx').value.trim(), criteria: $('#nCrit').value.trim(), dept: $('#nDept').value.trim() || 'Моя команда', invited: Math.max(1, parseInt($('#nInv').value) || 1), phase: 'ideas', created: now(), owner: 'leader', solutions: [], comments: [] };
+      ST.tasks.unshift(t); ST.current = t.id; ST.view = 'tasks'; save(); render(); toast('Задача опубликована. Пришлите ссылку команде.');
+    });
+  }
+
+  // ---------- аналитика ----------
+  function renderStats() {
+    const all = ST.tasks.map(t => ({ t, s: V.stats(t) }));
+    const sol = all.reduce((a, x) => a + x.s.solutions, 0);
+    const dec = all.reduce((a, x) => a + x.s.decided, 0);
+    const done = ST.tasks.flatMap(t => t.solutions).filter(s => s.status === 'done' || s.status === 'in_work' || s.status === 'accepted').length;
+    $('#view').innerHTML = `
+      <h2>Аналитика вовлечённости</h2>
+      <div class="grid3">
+        <div class="card big"><div class="muted small">Задач</div><div class="kpi">${ST.tasks.length}</div></div>
+        <div class="card big"><div class="muted small">Решений от сотрудников</div><div class="kpi">${sol}</div></div>
+        <div class="card big"><div class="muted small">Взято в работу или внедрено</div><div class="kpi">${done}</div></div>
+      </div>
+      <div class="card"><table><thead><tr><th>Задача</th><th>Этап</th><th>Решений</th><th>Предложили</th><th>Голосовали</th><th>Решено на собрании</th></tr></thead><tbody>
+        ${all.map(({ t, s }) => `<tr><td>${esc(t.title)}</td><td>${PHASE[t.phase]}</td><td>${s.solutions}</td><td>${pct(s.partAuthors)}</td><td>${pct(s.partVoters)}</td><td>${s.decided}/${s.solutions}</td></tr>`).join('')}
+      </tbody></table>
+      <p class="muted small">Доля решений, по которым принято решение: ${sol ? pct(dec / sol) : '—'}.</p></div>`;
+  }
+
+  // ---------- как это работает ----------
+  function renderGuide() {
+    $('#view').innerHTML = `
+      <div class="card"><h2>Как пользоваться</h2>
+      <ol class="howto">
+        <li><b>Руководитель</b> ставит задачу-вопрос.</li>
+        <li><b>Сотрудники</b> анонимно предлагают решения. 🛡 Сервис убирает из текста приметы автора: должность, стаж, имена, манеру письма.</li>
+        <li><b>Все голосуют</b>: 3 голоса у каждого, счёт скрыт до конца.</li>
+        <li><b>Открытое обсуждение</b> топ-решений по готовой повестке. Решения фиксируются в сервисе, их видят все.</li>
+      </ol></div>`;
+  }
+
+  function bindGo() { $$('[data-go]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); ST.view = a.dataset.go; ST.current = null; save(); render(); })); }
+
+  function render() {
+    renderHeader();
+    $$('.tab').forEach(x => x.classList.toggle('active', x.dataset.view === (ST.view || 'tasks')));
+    const v = ST.view || 'tasks';
+    if (v === 'guide') return renderGuide();
+    if (v === 'stats') return renderStats();
+    if (v === 'new') return renderNew();
+    if (ST.current) return renderTask();
+    renderList();
+  }
+
+  function init() {
+    $('#roleSel').addEventListener('change', e => { ST.role = e.target.value; save(); render(); });
+    $('#switchBtn').addEventListener('click', () => { ST.me = 'u' + uid(); save(); render(); toast('Теперь вы — другой сотрудник (новый анонимный участник)'); });
+    $('#newBtn').addEventListener('click', () => { ST.view = 'new'; ST.current = null; save(); render(); });
+    $('#resetBtn').addEventListener('click', () => { if (confirm('Вернуть демо-данные? Ваши изменения удалятся.')) { ST = demo(); save(); render(); } });
+    $$('.tab').forEach(x => x.addEventListener('click', () => { ST.view = x.dataset.view; if (ST.view !== 'tasks') ST.current = null; save(); render(); }));
+    render();
+  }
+  document.addEventListener('DOMContentLoaded', init);
+  window.__veche = { render, get state() { return ST; } };
+})();
+
+</script>
+</body>
+</html>
